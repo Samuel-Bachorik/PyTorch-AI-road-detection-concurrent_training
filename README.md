@@ -23,7 +23,7 @@ Example:<br/>
 ![Mask](https://github.com/Samuel-Bachorik/PyTorch-AI-road-detection/blob/main/Images/Image%20%26%20Mask.jpg)
 
 # How to use 
-In Run_training.py set folders with downloaded dataset like this <br/>
+In `Run_training.py` set folders with downloaded dataset like this <br/>
 
 ```python
 folders_training.append("C:/Users/Samuel/PycharmProjects/Condapytorch/mestodataset2/City_sunny1/")
@@ -31,19 +31,19 @@ folders_training.append("C:/Users/Samuel/PycharmProjects/Condapytorch/mestodatas
 folders_training.append("C:/Users/Samuel/PycharmProjects/Condapytorch/mestodataset2/City_rainy/")
 folders_training.append("C:/Users/Samuel/PycharmProjects/Condapytorch/mestodataset2/City_rainy2/")
 ```
-Then Run Run_training.py <br/>
+Then Run `Run_training.py` <br/>
 <br/>
 When model is trained you can run inference like this -<br/>
-In segmentation_inference set saved model Path <br/>
+In `segmentation_inference` set saved model Path <br/>
 ```python
 # Path to trained weights
 self.PATH = "./Model1"
 ```
-In Run_video_inference.py set your desired video<br/>
+In `Run_video_inference.py` set your desired video<br/>
 ```python
 cap = cv2.VideoCapture("C:/Users/Samuel/PycharmProjects/Condapytorch/City.mp4")
 ```
-Run Run_video_inference.py<br/>
+Run `Run_video_inference.py`<br/>
 When inference is done you will get output.avi video. 
 
 
@@ -51,18 +51,18 @@ When inference is done you will get output.avi video.
 If you want to run inference with pretrained model - (you can choose)-
 [Models](https://github.com/Samuel-Bachorik/PyTorch-AI-road-detection/tree/main/Modelsg)<br/>
 
-Just In Run_video_inference.py set your desired video <br/>
+Just In `Run_video_inference.py` set your desired video <br/>
 ```python
 cap = cv2.VideoCapture("C:/Users/Samuel/PycharmProjects/Condapytorch/City.mp4")
 ```
-In segmentation_inference set model Path <br/>
+In `segmentation_inference` set model Path <br/>
 ```python
 # Path to trained weights
 self.PATH = "./Model1"
 ```
-In Run_video_inference.py set your desired video<br/>
+In `Run_video_inference.py` set your desired video<br/>
 ```python
 cap = cv2.VideoCapture("C:/Users/Samuel/PycharmProjects/Condapytorch/City.mp4")
 ```
-Run Run_video_inference.py<br/>
+Run `Run_video_inference.py`<br/>
 When inference is done you will get output.avi video. <br/>
