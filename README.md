@@ -51,10 +51,6 @@ When inference is done you will get output.avi video.
 If you want to run inference with pretrained model - (you can choose)-
 [Models](https://github.com/Samuel-Bachorik/PyTorch-AI-road-detection-classification/tree/main/Models)<br/>
 
-Just In `Run_video_inference.py` set your desired video <br/>
-```python
-cap = cv2.VideoCapture("C:/Users/Samuel/PycharmProjects/Condapytorch/City.mp4")
-```
 In `segmentation_inference` set model Path <br/>
 ```python
 # Path to trained weights
