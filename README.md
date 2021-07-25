@@ -1,7 +1,7 @@
 # PyTorch-AI-road-detection
-Artificial intelligence, model, training loop, model loader, inference
+Artificial intelligence model, training loop, model loader, inference
 
-AI model trained on custom dataset (1000 photos). <br/>
+Custom AI model trained on custom dataset (1000 photos). <br/>
 Learning rate = 0.0001<br/>
 Optimizer = Adam<br/>
 Results example from video.<br/>
@@ -10,7 +10,8 @@ Results could be better but due to low memory of GPU this is Maximum quality.
 
 
 # The course of the loss function
-100-120 epoch is enough for this model with this dataset.  
+100-120 epoch is enough for this model with this dataset. <br/>
+For this project I used custom loss function - loss = ((y - y_pred) ** 2).mean()
 
 ![Loss](https://github.com/Samuel-Bachorik/PyTorch-AI-road-detection/blob/main/Images/Loss%20function.jpg)
 
