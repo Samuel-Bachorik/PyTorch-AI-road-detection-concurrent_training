@@ -49,7 +49,7 @@ When inference is done you will get output.avi video.
 
 # Run with pretrained model
 If you want to run inference with pretrained model - (you can choose)-
-[Models](https://github.com/Samuel-Bachorik/PyTorch-AI-road-detection/tree/main/Modelsg)<br/>
+[Models](https://github.com/Samuel-Bachorik/PyTorch-AI-road-detection-classification/tree/main/Models)<br/>
 
 Just In `Run_video_inference.py` set your desired video <br/>
 ```python
