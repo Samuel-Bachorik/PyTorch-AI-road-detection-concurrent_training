@@ -1,4 +1,4 @@
-# PyTorch-AI-road-detection
+# PyTorch-AI-road-detection+
 Artificial intelligence model, training loop, model loader, inference
 
 Custom AI model trained on custom dataset (1000 photos). <br/>
