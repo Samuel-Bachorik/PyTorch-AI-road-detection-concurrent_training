@@ -5,8 +5,8 @@ AI model trained on custom dataset (1000 photos). <br/>
 Learning rate = 0.0001<br/>
 Optimizer = Adam<br/>
 Results example from video.<br/>
-Results could be better but due to low memory ofGPU this is Maximum quality. 
-![Road](https://github.com/Samuel-Bachorik/PyTorch-AI-road-detection/blob/main/Images/Road.gif)![Road](https://github.com/Samuel-Bachorik/PyTorch-AI-road-detection/blob/main/Images/Road2.gif)<br/>
+Results could be better but due to low memory of GPU this is Maximum quality. 
+![Road](https://github.com/Samuel-Bachorik/PyTorch-AI-road-detection/blob/main/Images/Example.gif)<br/>
 
 
 # The course of the loss function
@@ -22,7 +22,7 @@ Example:<br/>
 ![Mask](https://github.com/Samuel-Bachorik/PyTorch-AI-road-detection/blob/main/Images/Image%20%26%20Mask.jpg)
 
 # How to use 
-In Run_training.py set floders with download dataset like this <br/>
+In Run_training.py set folders with downloaded dataset like this <br/>
 
 ```python
 folders_training.append("C:/Users/Samuel/PycharmProjects/Condapytorch/mestodataset2/City_sunny1/")
@@ -47,7 +47,7 @@ When inference is done you will get output.avi video.
 
 
 # Run with pretrained model
-If you want to run inference with pretrained model - (you can choose)<br/>
+If you want to run inference with pretrained model - (you can choose)-
 [Models](https://github.com/Samuel-Bachorik/PyTorch-AI-road-detection/tree/main/Modelsg)<br/>
 
 Just In Run_video_inference.py set your desired video <br/>
