@@ -53,7 +53,7 @@ while (True):
 
         # Print FPS
         text = "fps= " + str(round(fps, 1))
-
+        
         im_bgr = cv2.cvtColor(result, cv2.COLOR_RGB2BGR)
         print_video(im_bgr, text)
 
