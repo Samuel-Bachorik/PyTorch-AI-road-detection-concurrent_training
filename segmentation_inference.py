@@ -9,7 +9,7 @@ class SegmentationInference:
         self.model = Model()
         self.device = self.model.device
         # Path to trained weights
-        self.PATH = "./Model1"
+        self.PATH = "./Model1.pth"
         # Load weights
         self.model.load_state_dict(torch.load(self.PATH))
         # Set GPU device if available
