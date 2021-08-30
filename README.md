@@ -1,5 +1,5 @@
 # PyTorch-AI-road-detection
-Artificial intelligence model, training loop, concurrent model loader, inference
+Artificial intelligence model, training loop, concurrent model loader, inference<br/>
 From now image processing runs concurrently
 
 Custom AI model trained on custom dataset (1000 photos). <br/>
