@@ -35,6 +35,7 @@ class ImagesLoader:
             ptr += 1
 
     def _find_files(self, path):
+        #Find files
         files = []
         for (dirpath, dirnames, filenames) in walk(path):
             files.append(filenames)
@@ -49,21 +50,28 @@ class ImagesLoader:
                     result.append(path + file_name)
 
         return result
-
+    
     def _load_image(self, file_name):
+        #Open image
         image = Image.open(file_name).convert("RGB")
-
+        #Mask need to be cropped and images need to be resized
         if self.type == "mask":
             image = image.crop((1, 1, 699, 479))
         else:
             image = image.resize((698, 478))
-
+        
+        #Postprocesing for masks, else for images
         if self.postprocessing is not None:
+            #Apply postprocesing function on mask
             image = self.postprocessing(image)
+            #Mask to numpy array
             image_np = numpy.array(image)
         else:
+            #Resize image
             image = image.resize((self.width, self.height))
+            #Image to numpy array
             image_np = numpy.array(image)
+            #Switch channel
             if self.channel_first and len(image_np.shape) > 2:
                 image_np = numpy.moveaxis(image_np, 2, 0)
 
