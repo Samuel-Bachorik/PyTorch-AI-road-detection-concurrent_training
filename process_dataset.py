@@ -1,90 +1,13 @@
-from os import walk
-import os
 import numpy
 import torch.nn.functional
 import torch
-os.environ["KMP_DUPLICATE_LIB_OK"]="TRUE"
-"""
-
-These classes are made for load images and create augmentation for them.
-Augmentation creates new copy of photos and adds blur, tilt, noise and flip to them. 
-Thanks to this we have more training data. 
-"""
-
-
-class ImagesLoader:
-    def __init__(self, folders_path, height=480, width=640, channel_first=False, file_mask=None, postprocessing=None):
-        self.channels = 3
-        self.height = height
-        self.width = width
-
-        self.postprocessing = postprocessing
-
-        self.file_mask = file_mask
-
-        self.file_names = []
-        for folder in folders_path:
-            self.file_names = self.file_names + self._find_files(folder)
-
-        self.file_names.sort()
-
-        self.count = len(self.file_names)
-
-        self.channel_first = channel_first
-
-        if self.channel_first:
-            self.images = numpy.zeros((self.count, self.channels, self.height, self.width), dtype=numpy.uint8)
-        else:
-            self.images = numpy.zeros((self.count, self.height, self.width, self.channels), dtype=numpy.uint8)
-
-        ptr = 0
-        for file_name in self.file_names:
-            print("loading image :", file_name)
-            self.images[ptr] = self._load_image(file_name)
-            ptr += 1
-
-    def _find_files(self, path):
-        files = []
-        for (dirpath, dirnames, filenames) in walk(path):
-            files.append(filenames)
-
-        result = []
-        for file_name in files[0]:
-            if file_name.endswith(".jpg") or file_name.endswith(".png"):
-
-                if self.file_mask == None:
-                    result.append(path + file_name)
-                elif file_name.find(self.file_mask) != -1:
-                    result.append(path + file_name)
-
-        return result
-
-    def _load_image(self, file_name):
-        image = Image.open(file_name).convert("RGB")
-
-        if self.postprocessing is not None:
-            image = self.postprocessing(image)
-            image_np = numpy.array(image)
-        else:
-            image = image.resize((self.width, self.height))
-            image_np = numpy.array(image)
-            if self.channel_first and len(image_np.shape) > 2:
-                image_np = numpy.moveaxis(image_np, 2, 0)
-
-        return image_np
-
-
-
-
-
-
+import concurrent.futures
+from concurrent.futures import ThreadPoolExecutor
 from PIL import Image, ImageFilter
-from PIL import Image, ImageEnhance
+from images_loader import ImagesLoader
 
-#height=448, width=640)
-class DatasetSegmentation:
-
-    def __init__(self, folders_training, folders_testing, classes_ids, height=480, width=640, augmentation_count=2):
+class ProcessDataset:
+    def __init__(self, folders_training, folders_testing, classes_ids, height=480, width=640, augmentation_count=10):
 
         self.classes_ids = classes_ids
 
@@ -98,8 +21,8 @@ class DatasetSegmentation:
         self.training_count = 0
 
         for folder in folders_training:
-            images = ImagesLoader([folder + "/images/"], height, width, channel_first=True)
-            masks = ImagesLoader([folder + "/mask/"], height, width, channel_first=True, file_mask="_watershed_mask",
+            images = ImagesLoader([folder + "/images/"],"image", height, width, channel_first=True)
+            masks = ImagesLoader([folder + "/mask/"],"mask", height, width, channel_first=True, file_mask="_watershed_mask",
                                  postprocessing=self._mask_postprocessing)
 
             self.training_images.append(images.images)
@@ -121,7 +44,7 @@ class DatasetSegmentation:
         for folder in folders_testing:
             images = ImagesLoader([folder + "/images/"], height, width, channel_first=True)
             masks = ImagesLoader([folder + "/mask/"], height, width, channel_first=True, file_mask="_watershed_mask",
-                                 postprocessing=self._mask_postprocessing)
+                                 postprocessing=None)
 
             self.testing_images.append(images.images)
             self.testing_masks.append(masks.images)
@@ -153,40 +76,49 @@ class DatasetSegmentation:
     def get_testing_count(self):
         return self.testing_count
 
+    def get_testing_batch(self, batch_size=32):
+        return self._get_batch(self.training_images, self.training_masks, batch_size, False)
+
     def get_training_batch(self, batch_size=32):
         return self._get_batch(self.training_images, self.training_masks, batch_size, True)
 
-    def get_testing_batch(self, batch_size=32):
-        return self._get_batch(self.training_images, self.training_masks, batch_size, False)
+    def process(self, images, masks, augmentation=False):
+        group_idx = numpy.random.randint(len(images))
+        image_idx = numpy.random.randint(len(images[group_idx]))
+
+        image_np = numpy.array(images[group_idx][image_idx]) / 256.0
+        mask_np = numpy.array(masks[group_idx][image_idx]).mean(axis=0).astype(int)
+
+        if augmentation:
+            image_np = self._augmentation_noise(image_np)
+            image_np, mask_np = self._augmentation_flip(image_np, mask_np)
+
+        mask_one_hot = numpy.eye(self.classes_count)[mask_np]
+        mask_one_hot = numpy.moveaxis(mask_one_hot, 2, 0)
+
+        result_x = torch.from_numpy(image_np).float()
+        result_y = torch.from_numpy(mask_one_hot).float()
+
+        return result_x, result_y
 
     def _get_batch(self, images, masks, batch_size, augmentation=False):
         result_x = torch.zeros((batch_size, self.channels, self.height, self.width)).float()
         result_y = torch.zeros((batch_size, self.classes_count, self.height, self.width)).float()
 
-        for i in range(batch_size):
-            group_idx = numpy.random.randint(len(images))
-            image_idx = numpy.random.randint(len(images[group_idx]))
+        with ThreadPoolExecutor(max_workers=batch_size) as executor:
+            results = [None] * batch_size
+            for x in range(batch_size):
+                results[x] = executor.submit(self.process, images, masks,  augmentation=augmentation)
 
-            image_np = numpy.array(images[group_idx][image_idx]) / 256.0
-
-            mask_np = numpy.array(masks[group_idx][image_idx]).mean(axis=0).astype(int)
-
-            if augmentation:
-                image_np = self._augmentation_noise(image_np)
-                image_np, mask_np = self._augmentation_flip(image_np, mask_np)
-
-            mask_one_hot = numpy.eye(self.classes_count)[mask_np]
-            mask_one_hot = numpy.moveaxis(mask_one_hot, 2, 0)
-
-            result_x[i] = torch.from_numpy(image_np).float()
-            result_y[i] = torch.from_numpy(mask_one_hot).float()
+            counter = 0
+            for f in concurrent.futures.as_completed(results):
+                result_x[counter], result_y[counter] = f.result()[0], f.result()[1]
+                counter += 1
 
         return result_x, result_y
 
     def _augmentation(self, images, masks, augmentation_count):
-
-        angle_max = 25
-        crop_prop = 0.2
+        angle_max, crop_prop= 13,0.2
 
         count = images.shape[0]
         total_count = count * augmentation_count
@@ -194,7 +126,7 @@ class DatasetSegmentation:
         images_result = numpy.zeros((total_count, images.shape[1], images.shape[2], images.shape[3]), dtype=numpy.uint8)
         mask_result = numpy.zeros((total_count, masks.shape[1], masks.shape[2], masks.shape[3]), dtype=numpy.uint8)
 
-        ptr = 0
+        counter = 0
         for j in range(count):
 
             image_in = Image.fromarray(numpy.moveaxis(images[j], 0, 2), 'RGB')
@@ -240,10 +172,10 @@ class DatasetSegmentation:
                 image_aug = numpy.moveaxis(image_aug, 2, 0)
                 mask_aug = numpy.moveaxis(mask_aug, 2, 0)
 
-                images_result[ptr] = image_aug
-                mask_result[ptr] = mask_aug
+                images_result[counter] = image_aug
+                mask_result[counter] = mask_aug
 
-                ptr += 1
+                counter += 1
 
         return images_result, mask_result
 
@@ -256,33 +188,10 @@ class DatasetSegmentation:
         result = 0.5 + contrast * (result - 0.5)
         result = result + noise
 
-        result = numpy.clip(result, 0.0, 1.0)
+        return numpy.clip(result, 0.0, 1.0)
 
-        return result
-
-    def _augmentation_flip(self, image_np, mask_np, p=0.2):
-        # random flips
-        if self._rnd(0, 1) < p:
-            image_np = numpy.flip(image_np, axis=1)
-            mask_np = numpy.flip(mask_np, axis=0)
-
-        if self._rnd(0, 1) < p:
-            image_np = numpy.flip(image_np, axis=2)
-            mask_np = numpy.flip(mask_np, axis=1)
-
-        '''
-        #random rolling
-        if self._rnd(0, 1) < p:
-            r           = numpy.random.randint(-32, 32)
-            image_np    = numpy.roll(image_np, r, axis=1)
-            mask_np     = numpy.roll(mask_np, r, axis=0)
-        if self._rnd(0, 1) < p:
-            r           = numpy.random.randint(-32, 32)
-            image_np    = numpy.roll(image_np, r, axis=2)
-            mask_np     = numpy.roll(mask_np, r, axis=1)
-        '''
-
-        return image_np.copy(), mask_np.copy()
+    def _augmentation_flip(self, image_np, mask_np):
+        return numpy.flip(image_np, axis=1).copy(), numpy.flip(mask_np, axis=0).copy()
 
     def _rnd(self, min_value, max_value):
         return (max_value - min_value) * numpy.random.rand() + min_value
@@ -294,7 +203,4 @@ class DatasetSegmentation:
         for i in range(len(self.classes_ids)):
             image.putpixel((4 * i + self.width // 2, 4 * i + self.height // 2), self.classes_ids[i])
 
-        image = image.quantize(self.classes_count)
-
-        return image
-
+        return image.quantize(self.classes_count)
