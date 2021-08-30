@@ -30,12 +30,12 @@ class ProcessDataset:
             self.training_masks.append(masks.images)
 
             print("processing augmentation\n")
-            
+            #Sent images for auqumentation
             images_aug, masks_aug = self._augmentation(images.images, masks.images, augmentation_count)
-            
+            #Add processed images to list
             self.training_images.append(images_aug)
             self.training_masks.append(masks_aug)
-
+            
             self.training_count += images.count * (1 + augmentation_count)
 
         self.testing_images = []
