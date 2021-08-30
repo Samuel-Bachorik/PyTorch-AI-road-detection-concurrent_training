@@ -31,10 +31,9 @@ class SegmentationInference:
             image_in_t = image_t
 
         image_in_t = image_in_t
-
+        #Process image
         prediction_t = self.model(image_in_t.unsqueeze(0)).squeeze(0)
         prediction_t = torch.argmax(prediction_t, dim=0)
-
         prediction_t = prediction_t.transpose(0, 1)
 
         mask_t = self.colors[prediction_t, :].transpose(0, 1)
