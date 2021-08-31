@@ -9,6 +9,16 @@ Results example from video.<br/>
 Results could be better but due to low memory of GPU this is Maximum quality. 
 ![Road](https://github.com/Samuel-Bachorik/PyTorch-AI-road-detection/blob/main/Images/Example.gif)<br/>
 
+# Model
+AI model created with `PyTorch`.<br/>
+The model is being trained on GPU, model's device is set to `"CUDA"` <br/>
+<br/>
+Model architecture
+   - `16x Conv2d` layers with `ReLu` activation functions and `BatchNorm2d`
+   - All of this in `nn.Sequential`
+   - `Upsample` in decoder
+   - `interpolate` encoder_1
+
 
 # The course of the loss function
 100-120 epoch is enough for this model with this dataset. <br/>
