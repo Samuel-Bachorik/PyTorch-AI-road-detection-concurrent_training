@@ -19,30 +19,28 @@ class ProcessDataset:
         self.training_images = []
         self.training_masks = []
         self.training_count = 0
-        
-        #Load images 
+
         for folder in folders_training:
             images = ImagesLoader([folder + "/images/"],"image", height, width, channel_first=True)
             masks = ImagesLoader([folder + "/mask/"],"mask", height, width, channel_first=True, file_mask="_watershed_mask",
                                  postprocessing=self._mask_postprocessing)
-            #Add images to array
+
             self.training_images.append(images.images)
             self.training_masks.append(masks.images)
 
             print("processing augmentation\n")
-            #Sent images for auqumentation
+
             images_aug, masks_aug = self._augmentation(images.images, masks.images, augmentation_count)
-            #Add processed images to list
+
             self.training_images.append(images_aug)
             self.training_masks.append(masks_aug)
-            
+
             self.training_count += images.count * (1 + augmentation_count)
 
         self.testing_images = []
         self.testing_masks = []
         self.testing_count = 0
-        
-        #Same with images for testing
+
         for folder in folders_testing:
             images = ImagesLoader([folder + "/images/"], height, width, channel_first=True)
             masks = ImagesLoader([folder + "/mask/"], height, width, channel_first=True, file_mask="_watershed_mask",
@@ -85,38 +83,33 @@ class ProcessDataset:
         return self._get_batch(self.training_images, self.training_masks, batch_size, True)
 
     def process(self, images, masks, augmentation=False):
-        #Variables for random image choose
         group_idx = numpy.random.randint(len(images))
         image_idx = numpy.random.randint(len(images[group_idx]))
-        #Create empty numpy arrays
+
         image_np = numpy.array(images[group_idx][image_idx]) / 256.0
         mask_np = numpy.array(masks[group_idx][image_idx]).mean(axis=0).astype(int)
-        #If augumentation, sent images to noise and flip functions
+
         if augmentation:
             image_np = self._augmentation_noise(image_np)
             image_np, mask_np = self._augmentation_flip(image_np, mask_np)
-            
-        #One hot encoding
+
         mask_one_hot = numpy.eye(self.classes_count)[mask_np]
         mask_one_hot = numpy.moveaxis(mask_one_hot, 2, 0)
-        
-        #Create torch tensors from numpy arrays
+
         result_x = torch.from_numpy(image_np).float()
         result_y = torch.from_numpy(mask_one_hot).float()
 
         return result_x, result_y
 
     def _get_batch(self, images, masks, batch_size, augmentation=False):
-        #Create empty numpy arrays
         result_x = torch.zeros((batch_size, self.channels, self.height, self.width)).float()
         result_y = torch.zeros((batch_size, self.classes_count, self.height, self.width)).float()
-        
-        #Create multiprocesing processes
+
         with ThreadPoolExecutor(max_workers=batch_size) as executor:
             results = [None] * batch_size
             for x in range(batch_size):
                 results[x] = executor.submit(self.process, images, masks,  augmentation=augmentation)
-            #Get results from all processes
+
             counter = 0
             for f in concurrent.futures.as_completed(results):
                 result_x[counter], result_y[counter] = f.result()[0], f.result()[1]
@@ -125,17 +118,19 @@ class ProcessDataset:
         return result_x, result_y
 
     def _augmentation(self, images, masks, augmentation_count):
-        angle_max, crop_prop= 13,0.2
+
+        angle_max = 25
+        crop_prop = 0.2
+
         count = images.shape[0]
         total_count = count * augmentation_count
-        
-        #Create empty numpy arrays
+
         images_result = numpy.zeros((total_count, images.shape[1], images.shape[2], images.shape[3]), dtype=numpy.uint8)
         mask_result = numpy.zeros((total_count, masks.shape[1], masks.shape[2], masks.shape[3]), dtype=numpy.uint8)
 
-        counter = 0
+        ptr = 0
         for j in range(count):
-            #Image from array to PIL
+
             image_in = Image.fromarray(numpy.moveaxis(images[j], 0, 2), 'RGB')
             mask_in = Image.fromarray(numpy.moveaxis(masks[j], 0, 2), 'RGB')
 
@@ -144,7 +139,7 @@ class ProcessDataset:
 
                 image_aug = image_in.rotate(angle)
                 mask_aug = mask_in.rotate(angle)
-                #Crop image and mask
+
                 c_left = int(self._rnd(0, crop_prop) * self.width)
                 c_top = int(self._rnd(0, crop_prop) * self.height)
 
@@ -153,8 +148,7 @@ class ProcessDataset:
 
                 image_aug = image_aug.crop((c_left, c_top, c_right, c_bottom))
                 mask_aug = mask_aug.crop((c_left, c_top, c_right, c_bottom))
-                
-                #Apply random filters on our image
+
                 if numpy.random.rand() < 0.5:
                     fil = numpy.random.randint(6)
 
@@ -170,49 +164,69 @@ class ProcessDataset:
                         image_aug = image_aug.filter(ImageFilter.SMOOTH)
                     elif fil == 5:
                         image_aug = image_aug.filter(ImageFilter.SMOOTH_MORE)
-                #Resize image
+
                 image_aug = image_aug.resize((self.width, self.height))
                 mask_aug = mask_aug.resize((self.width, self.height))
-                #From PIL to numpy array
+
                 image_aug = numpy.array(image_aug)
                 mask_aug = numpy.array(mask_aug)
-                #From PIL to numpy array
+
                 image_aug = numpy.moveaxis(image_aug, 2, 0)
                 mask_aug = numpy.moveaxis(mask_aug, 2, 0)
-                
-                #Add results to empty numpy arrays
-                images_result[counter] = image_aug
-                mask_result[counter] = mask_aug
 
-                counter += 1
+                images_result[ptr] = image_aug
+                mask_result[ptr] = mask_aug
+
+                ptr += 1
 
         return images_result, mask_result
-
     def _augmentation_noise(self, image_np):
-        #Brightness, noise and contrast values
         brightness = self._rnd(-0.25, 0.25)
         contrast = self._rnd(0.5, 1.5)
         noise = 0.05 * (2.0 * numpy.random.rand(self.channels, self.height, self.width) - 1.0)
-        
-        #Adjust brightness, noise and contrast of photo
+
         result = image_np + brightness
         result = 0.5 + contrast * (result - 0.5)
         result = result + noise
-        
-        return numpy.clip(result, 0.0, 1.0)
 
-    def _augmentation_flip(self, image_np, mask_np):
-        return numpy.flip(image_np, axis=1).copy(), numpy.flip(mask_np, axis=0).copy()
+        result = numpy.clip(result, 0.0, 1.0)
+
+        return result
+
+    def _augmentation_flip(self, image_np, mask_np, p=0.2):
+        # random flips
+        if self._rnd(0, 1) < p:
+            image_np = numpy.flip(image_np, axis=1)
+            mask_np = numpy.flip(mask_np, axis=0)
+
+        if self._rnd(0, 1) < p:
+            image_np = numpy.flip(image_np, axis=2)
+            mask_np = numpy.flip(mask_np, axis=1)
+
+        '''
+        #random rolling
+        if self._rnd(0, 1) < p:
+            r           = numpy.random.randint(-32, 32)
+            image_np    = numpy.roll(image_np, r, axis=1)
+            mask_np     = numpy.roll(mask_np, r, axis=0)
+        if self._rnd(0, 1) < p:
+            r           = numpy.random.randint(-32, 32)
+            image_np    = numpy.roll(image_np, r, axis=2)
+            mask_np     = numpy.roll(mask_np, r, axis=1)
+        '''
+
+        return image_np.copy(), mask_np.copy()
 
     def _rnd(self, min_value, max_value):
         return (max_value - min_value) * numpy.random.rand() + min_value
 
     def _mask_postprocessing(self, image):
-        #Resize mask
         image = image.resize((self.width, self.height), Image.NEAREST)
         image = image.convert("L")
 
         for i in range(len(self.classes_ids)):
             image.putpixel((4 * i + self.width // 2, 4 * i + self.height // 2), self.classes_ids[i])
-        #Quantize mask
-        return image.quantize(self.classes_count)
+
+        image = image.quantize(self.classes_count)
+
+        return image
