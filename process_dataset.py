@@ -5,12 +5,10 @@ import concurrent.futures
 from concurrent.futures import ThreadPoolExecutor
 from PIL import Image, ImageFilter
 from images_loader import ImagesLoader
-
 class ProcessDataset:
     def __init__(self, folders_training, folders_testing, classes_ids, height=480, width=640, augmentation_count=10):
 
         self.classes_ids = classes_ids
-
         self.classes_count = len(classes_ids)
 
         self.height = height
@@ -189,33 +187,16 @@ class ProcessDataset:
         result = 0.5 + contrast * (result - 0.5)
         result = result + noise
 
-        result = numpy.clip(result, 0.0, 1.0)
+        return numpy.clip(result, 0.0, 1.0)
 
-        return result
-
-    def _augmentation_flip(self, image_np, mask_np, p=0.2):
+    def _augmentation_flip(self, image_np, mask_np):
         # random flips
-        if self._rnd(0, 1) < p:
-            image_np = numpy.flip(image_np, axis=1)
-            mask_np = numpy.flip(mask_np, axis=0)
+        if self._rnd(0,1) < 0.5:
+            image_np = numpy.flip(image_np , 2)
+            mask_np = numpy.flip(mask_np, 1)
 
-        if self._rnd(0, 1) < p:
-            image_np = numpy.flip(image_np, axis=2)
-            mask_np = numpy.flip(mask_np, axis=1)
+        return  image_np.copy(),mask_np.copy()
 
-        '''
-        #random rolling
-        if self._rnd(0, 1) < p:
-            r           = numpy.random.randint(-32, 32)
-            image_np    = numpy.roll(image_np, r, axis=1)
-            mask_np     = numpy.roll(mask_np, r, axis=0)
-        if self._rnd(0, 1) < p:
-            r           = numpy.random.randint(-32, 32)
-            image_np    = numpy.roll(image_np, r, axis=2)
-            mask_np     = numpy.roll(mask_np, r, axis=1)
-        '''
-
-        return image_np.copy(), mask_np.copy()
 
     def _rnd(self, min_value, max_value):
         return (max_value - min_value) * numpy.random.rand() + min_value
