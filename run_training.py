@@ -11,37 +11,40 @@ if __name__ == '__main__':
 
     # Load training images
     folders_training = []
-    folders_training.append("C:/Users/Samuel/PycharmProjects/pythonProject/City_dataset/City_sunny1/")
-    folders_training.append("C:/Users/Samuel/PycharmProjects/pythonProject/City_dataset/City_sunny2/")
-    folders_training.append("C:/Users/Samuel/PycharmProjects/pythonProject/City_dataset/City_rainy/")
-    folders_training.append("C:/Users/Samuel/PycharmProjects/pythonProject/City_dataset/City_rainy2/")
+    folders_training.append("C:/Users/Samuel/PycharmProjects/pythonProject/City_dataset_resized/City_sunny1/")
+    folders_training.append("C:/Users/Samuel/PycharmProjects/pythonProject/City_dataset_resized/City_sunny2/")
+    folders_training.append("C:/Users/Samuel/PycharmProjects/pythonProject/City_dataset_resized/City_rainy1/")
+    folders_training.append("C:/Users/Samuel/PycharmProjects/pythonProject/City_dataset_resized/City_rainy2/")
 
     # Asign classes
     classes_ids = [8, 12]
     classes_count = len(classes_ids)
 
-    model = Model() # Load model
+    # Load model
+    model = Model()
 
     # Time estimating variables
     epochminus, arrayloss, arrayepoch, lossforavg = 0, [], [], 0
 
     # Print start time
     print(time.time())
+
     # At least 150 epoch for great results
     epochcount = 20
+    
     # Batch size, (You can increase this number by x2 if you have enough memory on GPU) (32,64..)
     batch_size = (64)
 
     # Load images (height and width must be divisible by 32)
-    dataset = ProcessDataset(folders_training, folders_training, classes_ids, height=384, width=512, augmentation_count=10)
-
+    dataset = ProcessDataset(folders_training, folders_training, classes_ids, height=384, width=512, augmentation_count=15)
+    maxloss = 9999.0
     # Training loop
     for epoch in range(epochcount):
         # Time estimating variables
         epochminus += 1
         timestart = time.time()
 
-        # calculate batch_count
+        # Calculate batch_count
         batch_count = (dataset.get_training_count() + batch_size) // batch_size
         print(batch_count, "Batch_count")
 
@@ -69,6 +72,13 @@ if __name__ == '__main__':
             # Get loss number for graph
             lossforavg += float(loss.data.cpu().numpy())
 
+            # Save model at lowest loss
+            if epoch > 35 and maxloss > float(loss.data.cpu().numpy()):
+                PATH = './Model_weights_loss.pth'
+                torch.save(model.state_dict(), PATH)
+                maxloss = float(loss.data.cpu().numpy())
+                print("Model saved ")
+
             # Reset gradients ,Find gradient,Update x
             optimizer.zero_grad()
             loss.backward()
@@ -86,11 +96,11 @@ if __name__ == '__main__':
 
         # save model weights every 10th epoch
         if epoch % 10 == 0:
-            PATH = './Model_weights.pth'
+            PATH = './Model_weights_epoch.pth'
             torch.save(model.state_dict(), PATH)
 
     # Save final model
-    PATH = './Trained_model_weights.pth'
+    PATH = './Trained_model_weights_final.pth'
     torch.save(model.state_dict(), PATH)
 
     # Show and save loss function graph
