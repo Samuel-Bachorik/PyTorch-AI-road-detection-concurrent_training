@@ -17,7 +17,7 @@ Model architecture
    - `16x Conv2d` layers with `ReLu` activation functions and `BatchNorm2d`
    - All of this in `nn.Sequential`
    - `Upsample` in decoder
-   - `interpolate` encoder_1
+   - `interpolate` Encoder_1
 
 
 # The course of the loss function
