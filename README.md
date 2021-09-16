@@ -6,7 +6,7 @@ Custom AI model trained on custom dataset (1000 photos). <br/>
 Learning rate = 0.0001<br/>
 Optimizer = Adam<br/>
 GPU used = RTX 3060 12GB<br/>
-Results example from video.<br/>
+Example:<br/>
 ![Road](https://github.com/Samuel-Bachorik/PyTorch-AI-road-detection-concurrent_training/blob/main/Images/Road_example.gif)<br/>
 
 # Model
@@ -14,10 +14,12 @@ AI [Model](https://github.com/Samuel-Bachorik/PyTorch-AI-road-detection-concurre
 The model is being trained on GPU, model's device is set to `"CUDA"` <br/>
 <br/>
 Model architecture
-   - `16x Conv2d` layers with `ReLu` activation functions and `BatchNorm2d`
-   - All of this in `nn.Sequential`
-   - `Upsample` in decoder
-   - `interpolate` Encoder_1
+   - Encoder - decoder model
+   - `16x Conv2d` layers divided in encoders and decoder
+   - `ReLu` activatios +  `BatchNorm2d`
+   -  All of this in `nn.Sequential`
+   -  Kernel 3x3
+   -  17 360 898 Model Parameters
 
 
 # The course of the loss function
