@@ -7,7 +7,7 @@ Learning rate = 0.0001<br/>
 Optimizer = Adam<br/>
 GPU used = RTX 3060 12GB<br/>
 Results example from video.<br/>
-![Road](https://github.com/Samuel-Bachorik/PyTorch-AI-road-detection-concurrent_training/blob/main/Images/Example2.gif)<br/>
+![Road](https://github.com/Samuel-Bachorik/PyTorch-AI-road-detection-concurrent_training/blob/main/Images/Road_example.gif)<br/>
 
 # Model
 AI [Model](https://github.com/Samuel-Bachorik/PyTorch-AI-road-detection-concurrent_training/blob/main/Model.py) created with `PyTorch`.<br/>
