@@ -5,12 +5,12 @@ From now image processing runs concurrently
 Custom AI model trained on custom dataset (1000 photos). <br/>
 Learning rate = 0.0001<br/>
 Optimizer = Adam<br/>
+GPU used = RTX 3060 12GB<br/>
 Results example from video.<br/>
-Results could be better but due to low memory of GPU this is Maximum quality. 
 ![Road](https://github.com/Samuel-Bachorik/PyTorch-AI-road-detection-concurrent_training/blob/main/Images/Example2.gif)<br/>
 
 # Model
-AI model created with `PyTorch`.<br/>
+AI [Model](https://github.com/Samuel-Bachorik/PyTorch-AI-road-detection-concurrent_training/blob/main/Model.py) created with `PyTorch`.<br/>
 The model is being trained on GPU, model's device is set to `"CUDA"` <br/>
 <br/>
 Model architecture
