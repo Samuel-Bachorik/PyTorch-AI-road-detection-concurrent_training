@@ -1,4 +1,3 @@
-import torch.nn.functional
 import torch
 import torch.nn as nn
 
@@ -10,11 +9,13 @@ class Model(torch.nn.Module):
         self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
         self.layers_encoder_0 = [
-            self.conv_bn(input_shape[0], 64, 2),
+            self.conv_bn(input_shape[0], 32, 2),
 
-            self.conv_bn(64, 64, 1),
+            self.conv_bn(32, 64, 1),
             self.conv_bn(64, 128, 2),
 
+            self.conv_bn(128, 128, 1),
+            self.conv_bn(128, 128, 1),
             self.conv_bn(128, 128, 1),
             self.conv_bn(128, 256, 2)
         ]
@@ -23,13 +24,17 @@ class Model(torch.nn.Module):
             self.conv_bn(256, 256, 1),
             self.conv_bn(256, 256, 2),
 
-            self.conv_bn(256, 256, 1),
-            self.conv_bn(256, 256, 2)
+            self.conv_bn(256, 512, 1),
+            self.conv_bn(512, 512, 1),
+            self.conv_bn(512, 512, 1),
+            self.conv_bn(512, 512, 2)
         ]
 
         self.layers_decoder = [
-            self.conv_bn(256 + 256, 256, 1),
+            self.conv_bn(512 + 256, 256, 1),
             self.conv_bn(256, 128, 1),
+            self.conv_bn(128, 128, 1),
+            self.conv_bn(128, 128, 1),
             self.conv_bn(128, 128, 1),
 
             nn.Conv2d(128, output_shape[0], kernel_size=1, stride=1, padding=0),
@@ -39,13 +44,17 @@ class Model(torch.nn.Module):
         for i in range(len(self.layers_encoder_0)):
             if hasattr(self.layers_encoder_0[i], "weight"):
                 torch.nn.init.xavier_uniform_(self.layers_encoder_0[i].weight)
+                torch.nn.init.zeros_(self.layers_encoder_0[i].bias)
 
         for i in range(len(self.layers_encoder_1)):
             if hasattr(self.layers_encoder_1[i], "weight"):
                 torch.nn.init.xavier_uniform_(self.layers_encoder_1[i].weight)
+                torch.nn.init.zeros_(self.layers_encoder_1[i].bias)
+
         for i in range(len(self.layers_decoder)):
             if hasattr(self.layers_decoder[i], "weight"):
                 torch.nn.init.xavier_uniform_(self.layers_decoder[i].weight)
+                torch.nn.init.zeros_(self.layers_decoder[i].bias)
 
         self.model_encoder_0 = nn.Sequential(*self.layers_encoder_0)
         self.model_encoder_0.to(self.device)
@@ -70,20 +79,6 @@ class Model(torch.nn.Module):
 
         y = self.model_decoder(d_in)
         return y
-
-    def save(self, path):
-        torch.save(self.model_encoder_0.state_dict(), path + "model_encoder_0.pt")
-        torch.save(self.model_encoder_1.state_dict(), path + "model_encoder_1.pt")
-        torch.save(self.model_decoder.state_dict(), path + "model_decoder.pt")
-
-    def load(self, path):
-        self.model_encoder_0.load_state_dict(torch.load(path + "model_encoder_0.pt", map_location=self.device))
-        self.model_encoder_1.load_state_dict(torch.load(path + "model_encoder_1.pt", map_location=self.device))
-        self.model_decoder.load_state_dict(torch.load(path + "model_decoder.pt", map_location=self.device))
-
-        self.model_encoder_0.eval()
-        self.model_encoder_1.eval()
-        self.model_decoder.eval()
 
     def conv_bn(self, inputs, outputs, stride):
         return nn.Sequential(
