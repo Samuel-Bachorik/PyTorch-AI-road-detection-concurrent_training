@@ -7,7 +7,7 @@ Learning rate = 0.0001<br/>
 Optimizer = Adam<br/>
 Results example from video.<br/>
 Results could be better but due to low memory of GPU this is Maximum quality. 
-![Road](https://github.com/Samuel-Bachorik/PyTorch-AI-road-detection/blob/main/Images/Example.gif)<br/>
+![Road](https://github.com/Samuel-Bachorik/PyTorch-AI-road-detection-concurrent_training/blob/main/Images/Example2.gif)<br/>
 
 # Model
 AI model created with `PyTorch`.<br/>
