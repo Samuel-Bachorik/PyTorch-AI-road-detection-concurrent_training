@@ -31,7 +31,7 @@ For this project I used custom loss function - loss = ((y - y_pred) ** 2).mean()
 # Dataset
 Dataset consists of 1000 photos from rainy and sunny city. 50% rainy / 50% sunny photos<br/>
 Link to dataset photos -
-[Dataset](https://drive.google.com/drive/folders/1795opF54wK76r5snXs68OtGl2cR7g-3C?usp=sharing)<br/>
+[Dataset](https://drive.google.com/drive/folders/1aUeWMmBwkKbLvj19hiELGR9TBFUPIKsl?usp=sharing)<br/>
 Example:<br/>
 ![Mask](https://github.com/Samuel-Bachorik/PyTorch-AI-road-detection/blob/main/Images/Image%20%26%20Mask.jpg)
 
