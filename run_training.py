@@ -1,5 +1,5 @@
 from process_dataset import ProcessDataset
-from Model import Model
+from Model_1 import Model
 import torch
 import os
 import time
