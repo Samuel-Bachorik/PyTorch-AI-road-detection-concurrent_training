@@ -43,6 +43,7 @@ folders_training.append("C:/Users/Samuel/PycharmProjects/Condapytorch/mestodatas
 folders_training.append("C:/Users/Samuel/PycharmProjects/Condapytorch/mestodataset2/City_sunny2/")
 folders_training.append("C:/Users/Samuel/PycharmProjects/Condapytorch/mestodataset2/City_rainy/")
 folders_training.append("C:/Users/Samuel/PycharmProjects/Condapytorch/mestodataset2/City_rainy2/")
+folders_training.append("C:/Users/Samuel/PycharmProjects/Condapytorch/mestodataset2/City_2/")
 ```
 Then Run `Run_training.py` <br/>
 <br/>
@@ -61,7 +62,7 @@ When inference is done you will get output.avi video.
 
 
 # Run with pretrained model
-If you want to run inference with pretrained model - (you can choose)-
+If you want to run inference with pretrained model you need to download model trained wieghts - (you can choose)-
 [Models](https://github.com/Samuel-Bachorik/PyTorch-AI-road-detection-classification/tree/main/Models)<br/>
 
 In `segmentation_inference` set model Path <br/>
