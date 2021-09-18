@@ -11,10 +11,11 @@ if __name__ == '__main__':
 
     # Load training images
     folders_training = []
-    folders_training.append("C:/Users/Samuel/PycharmProjects/pythonProject/City_dataset_resized/City_sunny1/")
-    folders_training.append("C:/Users/Samuel/PycharmProjects/pythonProject/City_dataset_resized/City_sunny2/")
-    folders_training.append("C:/Users/Samuel/PycharmProjects/pythonProject/City_dataset_resized/City_rainy1/")
-    folders_training.append("C:/Users/Samuel/PycharmProjects/pythonProject/City_dataset_resized/City_rainy2/")
+    folders_training.append("C:/Users/Samuel/PycharmProjects/pythonProject/City_dataset/City_sunny1/")
+    folders_training.append("C:/Users/Samuel/PycharmProjects/pythonProject/City_dataset/City_sunny2/")
+    folders_training.append("C:/Users/Samuel/PycharmProjects/pythonProject/City_dataset/City_rainy1/")
+    folders_training.append("C:/Users/Samuel/PycharmProjects/pythonProject/City_dataset/City_rainy2/")
+    folders_training.append("C:/Users/Samuel/PycharmProjects/pythonProject/City_dataset/City_2/")
 
     # Asign classes
     classes_ids = [8, 12]
@@ -29,15 +30,16 @@ if __name__ == '__main__':
     # Print start time
     print(time.time())
 
-    # At least 150 epoch for great results
-    epochcount = 20
-    
+    # At least 80 epoch for great results
+    epochcount = 180
+
     # Batch size, (You can increase this number by x2 if you have enough memory on GPU) (32,64..)
     batch_size = (64)
 
     # Load images (height and width must be divisible by 32)
-    dataset = ProcessDataset(folders_training, folders_training, classes_ids, height=384, width=512, augmentation_count=15)
-    maxloss = 9999.0
+    dataset = ProcessDataset(folders_training, folders_training, classes_ids, height=384, width=512, augmentation_count=25)
+    maxloss = 99999.0
+
     # Training loop
     for epoch in range(epochcount):
         # Time estimating variables
@@ -73,9 +75,8 @@ if __name__ == '__main__':
             lossforavg += float(loss.data.cpu().numpy())
 
             # Save model at lowest loss
-            if epoch > 35 and maxloss > float(loss.data.cpu().numpy()):
-                PATH = './Model_weights_loss.pth'
-                torch.save(model.state_dict(), PATH)
+            if epoch > 30 and maxloss > float(loss.data.cpu().numpy()):
+                torch.save(model.state_dict(), './Model_lowest_loss')
                 maxloss = float(loss.data.cpu().numpy())
                 print("Model saved ")
 
@@ -87,6 +88,7 @@ if __name__ == '__main__':
         # Graphing variables
         arrayepoch.append(epoch)
         arrayloss.append(lossforavg / batch_count)
+        print(lossforavg / batch_count,"Epoch avg loss")
         lossforavg = 0
 
         # Time estimating variables
@@ -96,11 +98,12 @@ if __name__ == '__main__':
 
         # save model weights every 10th epoch
         if epoch % 10 == 0:
-            PATH = './Model_weights_epoch.pth'
+            PATH = './Model_epoch'
             torch.save(model.state_dict(), PATH)
 
+
     # Save final model
-    PATH = './Trained_model_weights_final.pth'
+    PATH = './Model_final'
     torch.save(model.state_dict(), PATH)
 
     # Show and save loss function graph
