@@ -62,8 +62,9 @@ When inference is done you will get output.avi video.
 
 
 # Run with pretrained model
-If you want to run inference with pretrained model you need to download model trained wieghts - (you can choose)-
-[Models](https://github.com/Samuel-Bachorik/PyTorch-AI-road-detection-classification/tree/main/Models)<br/>
+If you want to run inference with pretrained model you need to download model trained wieghts - <br/>
+You can choose -
+[Models](https://drive.google.com/drive/folders/11Cz2hnVdQutggVD7TjVIZHmEF48T4ErF?usp=sharing)<br/>
 
 In `segmentation_inference` set model Path <br/>
 ```python
