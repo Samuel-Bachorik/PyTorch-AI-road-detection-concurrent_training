@@ -2,7 +2,7 @@ import numpy
 import torch
 import os
 os.environ["KMP_DUPLICATE_LIB_OK"]="TRUE"
-from Model import Model
+from Model_1 import Model
 class SegmentationInference:
     def __init__(self,classes_count):
         # Load model
