@@ -60,13 +60,17 @@ cap = cv2.VideoCapture("C:/Users/Samuel/PycharmProjects/Condapytorch/City.mp4")
 Run `Run_video_inference.py`<br/>
 When inference is done you will get output.avi video. 
 
-
 # Run with pretrained model
 If you want to run inference with pretrained model you need to download model trained wieghts - <br/>
 You can choose -
-[Models](https://drive.google.com/drive/folders/11Cz2hnVdQutggVD7TjVIZHmEF48T4ErF?usp=sharing)<br/>
+[Models weights](https://drive.google.com/drive/folders/11Cz2hnVdQutggVD7TjVIZHmEF48T4ErF?usp=sharing)<br/>
+
+>IMPORTANT: Make sure your downloaded model weights corresponds with Model architecture.<br/>
+>`Model_weights_1` for [Model 1](https://github.com/Samuel-Bachorik/PyTorch-AI-road-detection-concurrent_training/blob/main/Model_1.py)<br/>
+>`Model_weights_2` for [Model 2](https://github.com/Samuel-Bachorik/PyTorch-AI-road-detection-concurrent_training/blob/main/Model_2.py) <br/>
 
 In `segmentation_inference` set model Path <br/>
+
 ```python
 # Path to trained weights
 self.PATH = "Model_weights_1.pth"
@@ -78,3 +82,7 @@ cap = cv2.VideoCapture("C:/Users/Samuel/PycharmProjects/Condapytorch/City.mp4")
 Run `Run_video_inference.py`<br/>
 When inference is done you will get output.avi video. <br/>
 
+
+# Test video
+For best result use video with aspect ratio `4:3` and ressolution `1024x768` <br/>
+You can test model on your own video or you can download here - [Download Video](https://drive.google.com/file/d/13RuSzPdqhz8a-k9XH5ni0hIREOTa3v9V/view?usp=sharing)<br/>
