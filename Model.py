@@ -22,9 +22,10 @@ class Model(torch.nn.Module):
 
         self.layers_encoder_1 = [
             self.conv_bn(256, 256, 1),
-            self.conv_bn(256, 256, 2),
+            self.conv_bn(256, 512, 2),
 
-            self.conv_bn(256, 512, 1),
+            self.conv_bn(512, 512, 1),
+            self.conv_bn(512, 512, 1),
             self.conv_bn(512, 512, 1),
             self.conv_bn(512, 512, 1),
             self.conv_bn(512, 512, 2)
@@ -32,8 +33,8 @@ class Model(torch.nn.Module):
 
         self.layers_decoder = [
             self.conv_bn(512 + 256, 256, 1),
+            self.conv_bn(256, 256, 1),
             self.conv_bn(256, 128, 1),
-            self.conv_bn(128, 128, 1),
             self.conv_bn(128, 128, 1),
             self.conv_bn(128, 128, 1),
 
