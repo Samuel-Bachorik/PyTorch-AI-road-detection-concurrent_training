@@ -35,10 +35,13 @@ class ProcessDataset:
 
             self.training_count += images.count * (1 + augmentation_count)
 
+
+
+
         self.testing_images = []
         self.testing_masks = []
         self.testing_count = 0
-
+        """
         for folder in folders_testing:
             images = ImagesLoader([folder + "/images/"], height, width, channel_first=True)
             masks = ImagesLoader([folder + "/mask/"], height, width, channel_first=True, file_mask="_watershed_mask",
@@ -48,6 +51,7 @@ class ProcessDataset:
             self.testing_masks.append(masks.images)
 
             self.testing_count += images.count
+        """
 
         self.channels = 3
         self.height = height
@@ -55,7 +59,7 @@ class ProcessDataset:
         self.input_shape = (self.channels, self.height, self.width)
 
         self.output_shape = (self.classes_count, self.height, self.width)
-        memory = (self.get_training_count() + self.get_testing_count()) * 2 * numpy.prod(self.input_shape)
+        #memory = (self.get_training_count() + self.get_testing_count()) * 2 * numpy.prod(self.input_shape)
 
         print("\n\n\n\n")
         print("dataset summary : \n")
@@ -65,7 +69,7 @@ class ProcessDataset:
         print("height   = ", self.height)
         print("width    = ", self.width)
         print("classes_count =  ", self.classes_count)
-        print("required_memory = ", memory / 1000000, " MB")
+        #print("required_memory = ", memory / 1000000, " MB")
         print("\n")
 
     def get_training_count(self):
@@ -78,15 +82,15 @@ class ProcessDataset:
         return self._get_batch(self.training_images, self.training_masks, batch_size, False)
 
     def get_training_batch(self, batch_size=32):
-        return self._get_batch(self.training_images, self.training_masks, batch_size, True)
+        return self._get_batch(self.training_images, self.training_masks, batch_size, augmentation=True)
 
-    def process(self, images, masks, augmentation=False):
+    def process(self, images, masks, augmentation=True):
         group_idx = numpy.random.randint(len(images))
         image_idx = numpy.random.randint(len(images[group_idx]))
 
         image_np = numpy.array(images[group_idx][image_idx]) / 256.0
         mask_np = numpy.array(masks[group_idx][image_idx]).mean(axis=0).astype(int)
-
+        #if self._rnd(0, 1) > 0.1:
         if augmentation:
             image_np = self._augmentation_noise(image_np)
             image_np, mask_np = self._augmentation_flip(image_np, mask_np)
@@ -99,7 +103,7 @@ class ProcessDataset:
 
         return result_x, result_y
 
-    def _get_batch(self, images, masks, batch_size, augmentation=False):
+    def _get_batch(self, images, masks, batch_size, augmentation=True):
         result_x = torch.zeros((batch_size, self.channels, self.height, self.width)).float()
         result_y = torch.zeros((batch_size, self.classes_count, self.height, self.width)).float()
 
@@ -116,9 +120,7 @@ class ProcessDataset:
         return result_x, result_y
 
     def _augmentation(self, images, masks, augmentation_count):
-
-        angle_max = 25
-        crop_prop = 0.2
+        angle_max, crop_prop = 25, 0.2
 
         count = images.shape[0]
         total_count = count * augmentation_count
@@ -133,6 +135,8 @@ class ProcessDataset:
             mask_in = Image.fromarray(numpy.moveaxis(masks[j], 0, 2), 'RGB')
 
             for i in range(augmentation_count):
+
+
                 angle = self._rnd(-angle_max, angle_max)
 
                 image_aug = image_in.rotate(angle)
@@ -195,8 +199,7 @@ class ProcessDataset:
             image_np = numpy.flip(image_np , 2)
             mask_np = numpy.flip(mask_np, 1)
 
-        return  image_np.copy(),mask_np.copy()
-
+        return image_np.copy(),mask_np.copy()
 
     def _rnd(self, min_value, max_value):
         return (max_value - min_value) * numpy.random.rand() + min_value
@@ -208,6 +211,4 @@ class ProcessDataset:
         for i in range(len(self.classes_ids)):
             image.putpixel((4 * i + self.width // 2, 4 * i + self.height // 2), self.classes_ids[i])
 
-        image = image.quantize(self.classes_count)
-
-        return image
+        return image.quantize(self.classes_count)
