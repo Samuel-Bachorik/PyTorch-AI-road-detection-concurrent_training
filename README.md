@@ -69,7 +69,7 @@ You can choose -
 In `segmentation_inference` set model Path <br/>
 ```python
 # Path to trained weights
-self.PATH = "./Model1"
+self.PATH = "Model_weights_1.pth"
 ```
 In `Run_video_inference.py` set your desired video<br/>
 ```python
