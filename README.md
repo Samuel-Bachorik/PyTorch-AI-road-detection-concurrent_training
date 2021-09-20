@@ -39,11 +39,11 @@ Example:<br/>
 In `Run_training.py` set folders with downloaded dataset like this <br/>
 
 ```python
-folders_training.append("C:/Users/Samuel/PycharmProjects/Condapytorch/mestodataset2/City_sunny1/")
-folders_training.append("C:/Users/Samuel/PycharmProjects/Condapytorch/mestodataset2/City_sunny2/")
-folders_training.append("C:/Users/Samuel/PycharmProjects/Condapytorch/mestodataset2/City_rainy/")
-folders_training.append("C:/Users/Samuel/PycharmProjects/Condapytorch/mestodataset2/City_rainy2/")
-folders_training.append("C:/Users/Samuel/PycharmProjects/Condapytorch/mestodataset2/City_2/")
+folders_training.append("C:/Users/Samuel/PycharmProjects/Conda/City_dataset/City_sunny1/")
+folders_training.append("C:/Users/Samuel/PycharmProjects/Conda/City_dataset/City_sunny2/")
+folders_training.append("C:/Users/Samuel/PycharmProjects/Conda/City_dataset/City_rainy/")
+folders_training.append("C:/Users/Samuel/PycharmProjects/Conda/City_dataset/City_rainy2/")
+folders_training.append("C:/Users/Samuel/PycharmProjects/Conda/City_dataset/City_2/")
 ```
 Then Run `Run_training.py` <br/>
 <br/>
