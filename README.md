@@ -10,7 +10,7 @@ Example:<br/>
 ![Road](https://github.com/Samuel-Bachorik/PyTorch-AI-road-detection-concurrent_training/blob/main/Images/Road_example.gif)<br/>
 
 # Model
-AI [Model](https://github.com/Samuel-Bachorik/PyTorch-AI-road-detection-concurrent_training/blob/main/Model.py) created with `PyTorch`.<br/>
+AI [Model](https://github.com/Samuel-Bachorik/PyTorch-AI-road-detection-concurrent_training/blob/main/Model_1.py) created with `PyTorch`.<br/>
 The model is being trained on GPU, model's device is set to `"CUDA"` <br/>
 <br/>
 Model architecture
