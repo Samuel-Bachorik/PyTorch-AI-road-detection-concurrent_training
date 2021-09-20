@@ -29,7 +29,7 @@ For this project I used mean squared error loss function  = ((y - y_pred) ** 2).
 ![Loss](https://github.com/Samuel-Bachorik/PyTorch-AI-road-detection/blob/main/Images/Loss%20function.jpg)
 
 # Dataset
-Dataset consists of 1000 photos from rainy and sunny city. 50% rainy / 50% sunny photos<br/>
+Dataset consists of 1300 photos from rainy and sunny city. 50% rainy / 50% sunny photos<br/>
 Link to dataset photos -
 [Dataset](https://drive.google.com/drive/folders/1aUeWMmBwkKbLvj19hiELGR9TBFUPIKsl?usp=sharing)<br/>
 Example:<br/>
