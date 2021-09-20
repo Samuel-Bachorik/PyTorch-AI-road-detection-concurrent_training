@@ -26,7 +26,7 @@ Model architecture
 100-120 epoch is enough for this model with this dataset. <br/>
 For this project I used mean squared error loss function  = ((y - y_pred) ** 2).mean()
 
-![Loss](https://github.com/Samuel-Bachorik/PyTorch-AI-road-detection/blob/main/Images/Loss%20function.jpg)
+![Loss](https://github.com/Samuel-Bachorik/PyTorch-AI-road-detection-concurrent_training/blob/main/Images/Loss%20function.jpg)
 
 # Dataset
 Dataset consists of 1300 photos from rainy and sunny city. 50% rainy / 50% sunny photos<br/>
