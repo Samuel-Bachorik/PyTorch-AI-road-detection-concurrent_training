@@ -37,11 +37,11 @@ class ProcessDataset:
 
 
 
-
+        """
         self.testing_images = []
         self.testing_masks = []
         self.testing_count = 0
-        """
+        
         for folder in folders_testing:
             images = ImagesLoader([folder + "/images/"], height, width, channel_first=True)
             masks = ImagesLoader([folder + "/mask/"], height, width, channel_first=True, file_mask="_watershed_mask",
