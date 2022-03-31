@@ -5,8 +5,6 @@ Full test with car detection
 https://www.youtube.com/watch?v=VmhW1dGFPMw&t=1s&ab_channel=SamuelBachorik
 
 Custom AI model trained on custom dataset (1000 photos). <br/>
-Learning rate = 0.0001<br/>
-Optimizer = Adam<br/>
 GPU used = RTX 3060 12GB<br/>
 Example:<br/>
 ![Road](https://github.com/Samuel-Bachorik/PyTorch-AI-road-detection-concurrent_training/blob/main/Images/Road_example.gif)<br/>
